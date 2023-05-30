@@ -1,6 +1,5 @@
 package org.rs19061;
 
-
 import java.util.Map;
 import java.util.HashMap;
 
@@ -8,6 +7,7 @@ public class UrlUtils {
     private static final Map<Character, String> characterReplacements;
 
     static {
+        // Mapping of Latvian characters to their replacements
         characterReplacements = new HashMap<>();
         characterReplacements.put('ā', "a");
         characterReplacements.put('č', "c");
@@ -28,6 +28,7 @@ public class UrlUtils {
         String cityUrl = "https://www.ss.lv/lv/real-estate/";
         String replacedCity = replaceLatvianCharacters(selectedCity);
 
+        // Constructing the city-specific URL based on the selected city
         if (selectedCity.equals("rīga")) {
             cityUrl += propertyType + "/" + replacedCity.replace(" ", "-") + "/all/";
         } else if(selectedCity.equals("rīgas rajons")){

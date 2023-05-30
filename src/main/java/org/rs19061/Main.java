@@ -19,6 +19,7 @@ public class Main {
         JFrame frame = new JFrame("Data scraper");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Creating GUI components
         propertyTypeCombo = new JComboBox<>(new String[]{"Īpašuma veids...", "Flat", "House"});
         cityCombo = new JComboBox<>();
         urlField = new JTextField(30);
@@ -31,6 +32,7 @@ public class Main {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
 
+        // Adding components to the panel
         panel.add(new JLabel("Īpašuma veids:"));
         panel.add(propertyTypeCombo);
         panel.add(new JLabel("Pilsēta:"));
@@ -42,10 +44,12 @@ public class Main {
         panel.add(fetchButton);
         panel.add(scrollPane);
 
+        // Adding the panel to the frame and displaying it
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
 
+        // Adding action listeners to the combo boxes and buttons
         propertyTypeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
