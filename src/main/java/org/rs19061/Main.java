@@ -19,7 +19,7 @@ public class Main {
         JFrame frame = new JFrame("Data scraper");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        propertyTypeCombo = new JComboBox<>(new String[]{"Flat", "House"});
+        propertyTypeCombo = new JComboBox<>(new String[]{"Īpašuma veids...", "Flat", "House"});
         cityCombo = new JComboBox<>();
         urlField = new JTextField(30);
         pagesField = new JTextField(5);
@@ -49,15 +49,21 @@ public class Main {
         propertyTypeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (propertyTypeCombo.getSelectedIndex() == 0) {
+                if (propertyTypeCombo.getSelectedIndex() == 1) {
                     property = new Flat();
-                } else {
+                } else if (propertyTypeCombo.getSelectedIndex() == 2) {
                     property = new House();
+                } else {
+                    property = null;
+                    cityCombo.removeAllItems();
                 }
-                List<String> cities = property.fetchCities();
-                cityCombo.removeAllItems();
-                for(String city : cities){
-                    cityCombo.addItem(city);
+
+                if (property != null) {
+                    List<String> cities = property.fetchCities();
+                    cityCombo.removeAllItems();
+                    for(String city : cities){
+                        cityCombo.addItem(city);
+                    }
                 }
             }
         });
@@ -65,28 +71,35 @@ public class Main {
         cityCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String city = (String) cityCombo.getSelectedItem();
-                String url = property.constructCityUrl(city);
-                urlField.setText(url);
+                if (property != null) {
+                    String city = (String) cityCombo.getSelectedItem();
+                    if(city != null){
+                        String url = property.constructCityUrl(city);
+                        urlField.setText(url);
+                    }
+                }
             }
         });
 
         fetchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (property == null) {
+                    return;
+                }
+
                 PropertyFetcher propertyFetcher;
                 String fileName;
 
                 if (propertyTypeCombo.getSelectedIndex() == 1) {
-                    propertyFetcher = new HouseFetcher();
-                    fileName = "houses.csv";
-                } else {
                     propertyFetcher = new FlatFetcher();
                     fileName = "flats.csv";
+                } else {
+                    propertyFetcher = new HouseFetcher();
+                    fileName = "houses.csv";
                 }
 
                 int maxPages = Integer.parseInt(pagesField.getText());
-
                 List<String[]> propertyData = propertyFetcher.fetchProperties(urlField.getText(), maxPages);
                 CSVWriter csvWriter = new CSVWriter();
                 csvWriter.writeDataToCSV(propertyData, fileName);
@@ -96,13 +109,12 @@ public class Main {
                 int maxPrice = DataAnalytics.getMaximumPrice(propertyData);
                 Map<String, Integer> typeCount = DataAnalytics.countPropertyTypes(propertyData);
 
-
                 resultArea.setText("");  // clear previous results
                 resultArea.append("Vidējā cena: " + avgPrice + "\n");
                 resultArea.append("Min: " + minPrice + "\n");
                 resultArea.append("Max: " + maxPrice + "\n");
 
-                if (propertyTypeCombo.getSelectedIndex() != 1) {
+                if (propertyTypeCombo.getSelectedIndex() == 1) {
                     for (Map.Entry<String, Integer> entry : typeCount.entrySet()) {
                         resultArea.append( entry.getKey() + ": " + entry.getValue() + "\n");
                     }
